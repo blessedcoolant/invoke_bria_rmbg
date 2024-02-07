@@ -3,14 +3,13 @@ from typing import Any
 
 import numpy as np
 import torch
-import torch.nn.functional as F
 from invokeai.app.services.config.config_default import InvokeAIAppConfig
 from invokeai.backend.util.devices import choose_torch_device
 from invokeai.backend.util.util import download_with_progress_bar
 from PIL import Image
-from torchvision.transforms.functional import normalize
 
 from .bria_rmbg import BriaRMBG
+from .utils import postprocess_image, preprocess_image
 
 config = InvokeAIAppConfig.get_config()
 
@@ -44,31 +43,24 @@ class BriaRMBGTool:
         self.network.eval()
 
     def remove_background(self, image: Image.Image) -> Any:
+        model_size = [1024, 1024]
         image = image.convert("RGB") if image.mode != "RGB" else image  # Ensure image is RGB
         image_width, image_height = image.size
 
         # Resize image to match model sizing requirements
-        image = image.resize((1024, 1024), Image.BILINEAR)
+        image = image.resize(tuple(model_size), Image.BILINEAR)
 
         # Process the image
         np_image = np.array(image)
-        tensor_image = torch.tensor(np_image, dtype=torch.float32).permute(2, 0, 1)
-        tensor_image = torch.unsqueeze(tensor_image, 0)
-        tensor_image = torch.divide(tensor_image, 255.0)
-        tensor_image = normalize(tensor_image, [0.5, 0.5, 0.5], [1.0, 1.0, 1.0])
 
+        tensor_image = preprocess_image(np_image, model_size)
         if self.device == "cuda":
             tensor_image = tensor_image.cuda()
-
         bg_removed_tensor = self.network(tensor_image)
-        final_result = torch.squeeze(
-            F.interpolate(bg_removed_tensor[0][0], size=(image_height, image_width), mode="bilinear"), 0
-        )
-        ma = torch.max(final_result)
-        mi = torch.min(final_result)
-        final_result = (final_result - mi) / (ma - mi)
-        final_result_array = (final_result * 255).cpu().data.numpy().astype(np.uint8)
-        final_result_image = Image.fromarray(np.squeeze(final_result_array))
+
+        tensor_image = postprocess_image(bg_removed_tensor[0][0], (image_height, image_width))
+
+        final_result_image = Image.fromarray(tensor_image)
 
         # Create new transparent image to composite the result
         bg_removed_image = Image.new("RGBA", final_result_image.size, (0, 0, 0, 0))
