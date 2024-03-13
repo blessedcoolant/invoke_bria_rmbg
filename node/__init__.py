@@ -20,7 +20,7 @@ class BriaRemoveBackgroundInvocation(BaseInvocation, WithMetadata):
 
     def invoke(self, context: InvocationContext) -> ImageOutput:
         global bria_remover
-        image = context.services.images.get_pil(self.image.image_name)
+        image = context.images.get_pil(self.image.image_name)
 
         if not bria_remover:
             bria_remover = BriaRMBGTool()
