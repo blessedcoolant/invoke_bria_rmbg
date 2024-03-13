@@ -1,6 +1,7 @@
 # BriaAI RMBG 1.4 - Community Node for InvokeAI
 
-This is an unofficial implementation of the new background removal model from [BriaAI](https://huggingface.co/briaai/RMBG-1.4) for use with InvokeAI.
+This is an unofficial implementation of the new background removal model from [BriaAI](https://huggingface.co/briaai/RMBG-1.4) for use with InvokeAI 4.0 and above.
+_Note: If you are looking to use this with an older version of Invoke, please use the [3.x branch](https://github.com/blessedcoolant/invoke_bria_rmbg/tree/3.x) instead._
 
 ![BriaAI RMBG Preview](./assets/preview.jpg)
 
