@@ -3,15 +3,15 @@ from typing import Any
 
 import numpy as np
 import torch
-from invokeai.app.services.config.config_default import InvokeAIAppConfig
+from invokeai.app.services.config.config_default import get_config
+from invokeai.app.util.download_with_progress import download_with_progress_bar
 from invokeai.backend.util.devices import choose_torch_device
-from invokeai.backend.util.util import download_with_progress_bar
 from PIL import Image
 
 from .bria_rmbg import BriaRMBG
 from .utils import postprocess_image, preprocess_image
 
-config = InvokeAIAppConfig.get_config()
+config = get_config()
 
 BRIA_RMBG_MODELS = {
     "1.4": {
