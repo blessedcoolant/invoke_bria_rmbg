@@ -22,8 +22,10 @@ class BriaRemoveBackgroundInvocation(BaseInvocation, WithMetadata):
         global bria_remover
         image = context.images.get_pil(self.image.image_name)
 
-        if not bria_remover:
+        if not isinstance(bria_remover, BriaRMBGTool):
             bria_remover = BriaRMBGTool()
+
+        if bria_remover.network is None:
             bria_remover.load_model()
 
         bg_removed_image = bria_remover.remove_background(image)

@@ -1,5 +1,5 @@
 import pathlib
-from typing import Any
+from typing import Any, Optional
 
 import numpy as np
 import torch
@@ -21,7 +21,7 @@ BRIA_RMBG_MODELS = {
 }
 
 
-def resize_image(image):
+def resize_image(image: Image.Image) -> Image.Image:
     image = image.convert("RGB")
     model_input_size = (1024, 1024)
     image = image.resize(model_input_size, Image.BILINEAR)
@@ -30,7 +30,7 @@ def resize_image(image):
 
 class BriaRMBGTool:
     def __init__(self) -> None:
-        self.network = None
+        self.network: Optional[BriaRMBG] = None
         self.device = choose_torch_device()
 
     def load_model(self):
@@ -44,6 +44,7 @@ class BriaRMBGTool:
 
     def remove_background(self, image: Image.Image) -> Any:
         model_size = [1024, 1024]
+
         image = image.convert("RGB") if image.mode != "RGB" else image  # Ensure image is RGB
         image_width, image_height = image.size
 
@@ -57,7 +58,6 @@ class BriaRMBGTool:
         if self.device == "cuda":
             tensor_image = tensor_image.cuda()
         bg_removed_tensor = self.network(tensor_image)
-
         tensor_image = postprocess_image(bg_removed_tensor[0][0], (image_height, image_width))
 
         final_result_image = Image.fromarray(tensor_image)
