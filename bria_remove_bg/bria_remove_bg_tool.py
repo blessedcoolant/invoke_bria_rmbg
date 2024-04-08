@@ -36,7 +36,7 @@ class BriaRMBGTool:
     def load_model(self):
         BRIA_RMBG_MODEL_PATH = pathlib.Path(config.models_path / BRIA_RMBG_MODELS["1.4"]["local"])
         if not BRIA_RMBG_MODEL_PATH.exists():
-            download_with_progress_bar(BRIA_RMBG_MODELS["1.4"]["url"], BRIA_RMBG_MODEL_PATH)
+            download_with_progress_bar("BRIA RMBG Checkpoint", BRIA_RMBG_MODELS["1.4"]["url"], BRIA_RMBG_MODEL_PATH)
 
         self.network = BriaRMBG()
         self.network.load_state_dict(torch.load(BRIA_RMBG_MODEL_PATH, map_location=self.device))
