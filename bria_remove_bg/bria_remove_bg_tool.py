@@ -1,5 +1,5 @@
 import pathlib
-from typing import Any, Optional
+from typing import Any, Literal, Optional
 
 import numpy as np
 import torch
@@ -18,6 +18,10 @@ BRIA_RMBG_MODELS = {
         "url": "https://huggingface.co/briaai/RMBG-1.4/resolve/main/model.pth?download=true",
         "local": "any/bria-rmbg/model.pth",
     },
+    "Open RMBG": {
+        "url": "https://huggingface.co/schirrmacher/ormbg/resolve/main/models/ormbg.pth?download=true",
+        "local": "any/bria-rmbg/ormbg.pth",
+    },
 }
 
 
@@ -28,15 +32,22 @@ def resize_image(image: Image.Image) -> Image.Image:
     return image
 
 
+RMBG_MODEL_TYPES = Optional[Literal["1.4", "Open RMBG"]]
+
+
 class BriaRMBGTool:
     def __init__(self) -> None:
         self.network: Optional[BriaRMBG] = None
         self.device = choose_torch_device()
+        self.current_model: RMBG_MODEL_TYPES = None
 
-    def load_model(self):
-        BRIA_RMBG_MODEL_PATH = pathlib.Path(config.models_path / BRIA_RMBG_MODELS["1.4"]["local"])
+    def load_model(self, model_type: RMBG_MODEL_TYPES = "1.4"):
+        self.current_model = model_type
+        BRIA_RMBG_MODEL_PATH = pathlib.Path(config.models_path / BRIA_RMBG_MODELS[model_type]["local"])
         if not BRIA_RMBG_MODEL_PATH.exists():
-            download_with_progress_bar("BRIA RMBG Checkpoint", BRIA_RMBG_MODELS["1.4"]["url"], BRIA_RMBG_MODEL_PATH)
+            download_with_progress_bar(
+                "BRIA RMBG Checkpoint", BRIA_RMBG_MODELS[model_type]["url"], BRIA_RMBG_MODEL_PATH
+            )
 
         self.network = BriaRMBG()
         self.network.load_state_dict(torch.load(BRIA_RMBG_MODEL_PATH, map_location=self.device))

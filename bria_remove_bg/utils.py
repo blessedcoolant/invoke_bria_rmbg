@@ -1,7 +1,8 @@
 import numpy as np
 import torch
 import torch.nn.functional as F
-from torchvision.transforms.functional import normalize
+
+# from torchvision.transforms.functional import normalize
 
 
 def preprocess_image(im: np.ndarray, model_input_size: list) -> torch.Tensor:
@@ -10,7 +11,7 @@ def preprocess_image(im: np.ndarray, model_input_size: list) -> torch.Tensor:
     im_tensor = torch.tensor(im, dtype=torch.float32).permute(2, 0, 1)
     im_tensor = F.interpolate(torch.unsqueeze(im_tensor, 0), size=model_input_size, mode="bilinear").type(torch.uint8)
     image = torch.divide(im_tensor, 255.0)
-    image = normalize(image, [0.5, 0.5, 0.5], [1.0, 1.0, 1.0])
+    # image = normalize(image, [0.5, 0.5, 0.5], [1.0, 1.0, 1.0])
     return image
 
 
