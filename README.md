@@ -21,12 +21,7 @@ git clone https://github.com/blessedcoolant/invoke_bria_rmbg.git
 
 #### Models
 
-The required models will be automatically downloaded to your `root` directory.
-
-If you need to manually download the models, you can get them here from Microsoft and place them in your `INVOKE_ROOT/models/any/bria-rmbg`. Do not rename the files.
-
-- `model.pth` - [Download](https://huggingface.co/briaai/RMBG-1.4/resolve/main/model.pth?download=true)
-- `ormbg.pth` - [Download](https://huggingface.co/schirrmacher/ormbg/resolve/main/models/ormbg.pth?download=true)
+The required models will be automatically downloaded by Invoke's Model Download API.
 
 # Usage
 
