@@ -26,7 +26,7 @@ class BriaRMBGTool:
     @staticmethod
     def load_model(model_path: pathlib.Path, device: torch.device) -> BriaRMBG:
         network = BriaRMBG()
-        network.load_state_dict(torch.load(model_path, map_location=device))
+        network.load_state_dict(torch.load(model_path, map_location=device, weights_only=True))
         network.eval()
         return network
 
@@ -43,8 +43,10 @@ class BriaRMBGTool:
         np_image = np.array(image)
 
         tensor_image = preprocess_image(np_image, model_size)
-        if self.device.type == "cuda":
-            tensor_image = tensor_image.cuda()
+
+        self.network.to(self.device.type)
+        tensor_image = tensor_image.to(self.device)
+
         bg_removed_tensor = self.network(tensor_image)
         tensor_image = postprocess_image(bg_removed_tensor[0][0], (image_height, image_width))
 
